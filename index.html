@@ -156,23 +156,40 @@
       const dateInput = document.getElementById('pickupDate');
       const timeSelect = document.getElementById('pickupTime');
 
+      // 受取時間枠の自動セット
       timeSelect.innerHTML = state.calendarSettings.time_slots
         .map(slot => `<option value="${slot}">${slot}</option>`).join('');
-
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      const minDateStr = tomorrow.toISOString().split('T')[0];
+    
+      // 「今日」から数えて【2番目の営業日】（営業日+1日）を最速受取日として算出
+      const closedDays = state.calendarSettings.closed_days_of_week;
+      let targetDate = new Date();
+      let businessDayCount = 0;
+    
+      while (businessDayCount < 2) {
+        targetDate.setDate(targetDate.getDate() + 1);
+        const dayOfWeek = targetDate.getDay();
+        // 定休日でなければ営業日カウントを＋1
+        if (!closedDays.includes(dayOfWeek)) {
+          businessDayCount++;
+        }
+      }
+    
+      // YYYY-MM-DD 形式にフォーマット
+      const yyyy = targetDate.getFullYear();
+      const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(targetDate.getDate()).padStart(2, '0');
+      const minDateStr = `${yyyy}-${mm}-${dd}`;
+    
       dateInput.min = minDateStr;
       dateInput.value = minDateStr;
-
+    
+      // カレンダー変更時に定休日が選ばれた場合の制御
       dateInput.addEventListener('change', (e) => {
         const selectedDate = new Date(e.target.value);
         const dayOfWeek = selectedDate.getDay();
         
-        if (state.calendarSettings.closed_days_of_week.includes(dayOfWeek)) {
-          alert('選択された日は定休日です。別の日付を選択してください。');
+        if (closedDays.includes(dayOfWeek)) {
+          alert('選択された日は定休日（水・土・日）です。営業日（月・火・木・金）を選択してください。');
           dateInput.value = minDateStr;
         }
       });
