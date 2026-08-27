@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ドイツパン専門店 渡りに麦 - 事前予約</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- LINE LIFF SDK -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- Google Fonts (Shippori Mincho / Noto Sans JP) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #FBF9F5; /* サイト風の温かみのある生成り色 */
+      color: #3B332C; /* 柔らかいダークブラウンの文字色 */
+    }
+    .font-serif-title {
+      font-family: 'Shippori Mincho', serif;
+    }
+  </style>
+</head>
+<body class="pb-32 min-h-screen">
+
+  <!-- ヘッダー -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-[#EFECE6] p-4 text-center sticky top-0 z-10 shadow-sm">
+    <p class="text-[10px] tracking-widest text-[#8C7A6B] font-medium uppercase">German Bakery</p>
+    <h1 class="font-serif-title text-xl font-bold text-[#3B332C] tracking-wider mt-0.5">渡りに麦</h1>
+    <p class="text-xs text-[#8C7A6B] mt-1">事前お取り置き予約</p>
+  </header>
+
+  <!-- ローディング表示 -->
+  <div id="loading" class="flex flex-col items-center justify-center my-16">
+    <div class="animate-spin h-8 w-8 border-2 border-[#8C6239] border-t-transparent rounded-full mb-3"></div>
+    <p class="text-xs text-[#8C7A6B] tracking-wider">パンの情報を読み込んでいます...</p>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <main id="app" class="hidden max-w-md mx-auto p-4 space-y-6">
+
+    <!-- 1. 受取日時の指定 -->
+    <section class="bg-white rounded-2xl p-5 border border-[#EFECE6] shadow-sm">
+      <h2 class="font-serif-title text-sm font-bold text-[#3B332C] border-b border-[#EFECE6] pb-2.5 mb-4 flex items-center gap-2">
+        <span class="text-[#8C6239]">📅</span> 受取日時の選択
+      </h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[#6B5E52] mb-1.5">受取希望日 <span class="text-amber-700">*</span></label>
+          <input type="date" id="pickupDate" class="w-full bg-[#FBF9F5] border border-[#EFECE6] rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#8C6239] transition">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#6B5E52] mb-1.5">受取時間帯 <span class="text-amber-700">*</span></label>
+          <select id="pickupTime" class="w-full bg-[#FBF9F5] border border-[#EFECE6] rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#8C6239] transition">
+            <!-- 時間枠挿入 -->
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 商品選択 -->
+    <section class="bg-white rounded-2xl p-5 border border-[#EFECE6] shadow-sm">
+      <h2 class="font-serif-title text-sm font-bold text-[#3B332C] border-b border-[#EFECE6] pb-2.5 mb-4 flex items-center gap-2">
+        <span class="text-[#8C6239]">🥐</span> 商品の選択
+      </h2>
+      <div id="productList" class="space-y-4">
+        <!-- 動的描画 -->
+      </div>
+    </section>
+
+    <!-- 3. お客様情報 -->
+    <section class="bg-white rounded-2xl p-5 border border-[#EFECE6] shadow-sm">
+      <h2 class="font-serif-title text-sm font-bold text-[#3B332C] border-b border-[#EFECE6] pb-2.5 mb-4 flex items-center gap-2">
+        <span class="text-[#8C6239]">👤</span> お客様情報
+      </h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[#6B5E52] mb-1.5">お名前</label>
+          <input type="text" id="customerName" readonly class="w-full bg-[#F5F2EC] border border-[#EFECE6] rounded-xl p-2.5 text-sm text-[#8C7A6B] cursor-not-allowed">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#6B5E52] mb-1.5">電話番号 <span class="text-amber-700">*</span></label>
+          <input type="tel" id="phoneNumber" placeholder="09012345678" class="w-full bg-[#FBF9F5] border border-[#EFECE6] rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#8C6239] transition">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#6B5E52] mb-1.5">連絡事項（任意）</label>
+          <textarea id="memo" rows="2" placeholder="ご要望などがございましたらご記入ください" class="w-full bg-[#FBF9F5] border border-[#EFECE6] rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#8C6239] transition"></textarea>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 固定フッター -->
+  <footer id="footer" class="hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EFECE6] p-4 shadow-lg z-20">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-4">
+      <div>
+        <p class="text-[10px] text-[#8C7A6B] tracking-wider">合計金額（税込）</p>
+        <p class="text-xl font-bold text-[#3B332C]">¥<span id="totalAmount">0</span></p>
+      </div>
+      <button id="submitBtn" onclick="submitOrder()" class="flex-1 bg-[#8C6239] hover:bg-[#734F2D] text-white font-medium py-3 px-5 rounded-xl shadow-sm transition duration-200 text-sm tracking-wider text-center">
+        予約を確定する
+      </button>
+    </div>
+  </footer>
+
+  <!-- 処理スクリプト -->
+  <script>
+    // ==========================================
+    // 【設定項目】ご自身のURL・IDに書き換えてください
+    // ==========================================
+    const GAS_WEB_APP_URL = 'YOUR_GAS_WEB_APP_URL';
+    const LIFF_ID = 'YOUR_LIFF_ID';
+
+    let state = {
+      products: [],
+      calendarSettings: {},
+      cart: {},
+      lineUserId: '',
+      customerName: ''
+    };
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        state.lineUserId = profile.userId;
+        state.customerName = profile.displayName;
+        document.getElementById('customerName').value = state.customerName;
+
+        const res = await fetch(GAS_WEB_APP_URL);
+        const data = await res.json();
+        state.products = data.products;
+        state.calendarSettings = data.calendar_settings;
+
+        renderCalendar();
+        renderProducts();
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('footer').classList.remove('hidden');
+
+      } catch (err) {
+        alert('初期化に失敗しました。画面を再読み込みしてください。: ' + err.message);
+      }
+    });
+
+    function renderCalendar() {
+      const dateInput = document.getElementById('pickupDate');
+      const timeSelect = document.getElementById('pickupTime');
+
+      timeSelect.innerHTML = state.calendarSettings.time_slots
+        .map(slot => `<option value="${slot}">${slot}</option>`).join('');
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const minDateStr = tomorrow.toISOString().split('T')[0];
+      dateInput.min = minDateStr;
+      dateInput.value = minDateStr;
+
+      dateInput.addEventListener('change', (e) => {
+        const selectedDate = new Date(e.target.value);
+        const dayOfWeek = selectedDate.getDay();
+        
+        if (state.calendarSettings.closed_days_of_week.includes(dayOfWeek)) {
+          alert('選択された日は定休日です。別の日付を選択してください。');
+          dateInput.value = minDateStr;
+        }
+      });
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('productList');
+      container.innerHTML = state.products.map(p => {
+        const qty = state.cart[p.product_id] || 0;
+        return `
+          <div class="flex items-center gap-3.5 p-2 border-b border-[#F5F2EC] last:border-0">
+            <img src="${p.image_url || 'https://via.placeholder.com/80'}" alt="${p.name}" class="w-16 h-16 object-cover rounded-xl bg-[#F5F2EC]">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-xs font-bold text-[#3B332C] truncate">${p.name}</h3>
+              <p class="text-xs text-[#8C6239] font-bold mt-1">¥${p.price.toLocaleString()}</p>
+            </div>
+            <div class="flex items-center gap-2 bg-[#F5F2EC] rounded-xl p-1">
+              <button onclick="updateQty('${p.product_id}', -1)" class="w-7 h-7 bg-white rounded-lg text-[#3B332C] font-bold shadow-sm active:scale-95 text-xs flex items-center justify-center">-</button>
+              <span class="w-4 text-center text-xs font-bold text-[#3B332C]">${qty}</span>
+              <button onclick="updateQty('${p.product_id}', 1)" class="w-7 h-7 bg-[#8C6239] text-white rounded-lg font-bold shadow-sm active:scale-95 text-xs flex items-center justify-center">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateQty(productId, change) {
+      const current = state.cart[productId] || 0;
+      const updated = Math.max(0, current + change);
+      
+      if (updated === 0) {
+        delete state.cart[productId];
+      } else {
+        state.cart[productId] = updated;
+      }
+
+      renderProducts();
+      calculateTotal();
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      for (const [id, qty] of Object.entries(state.cart)) {
+        const product = state.products.find(p => p.product_id === id);
+        if (product) total += product.price * qty;
+      }
+      document.getElementById('totalAmount').innerText = total.toLocaleString();
+      return total;
+    }
+
+    async function submitOrder() {
+      const totalAmount = calculateTotal();
+      if (totalAmount === 0) {
+        alert('商品を選択してください。');
+        return;
+      }
+
+      const pickupDate = document.getElementById('pickupDate').value;
+      const pickupTime = document.getElementById('pickupTime').value;
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      const memo = document.getElementById('memo').value.trim();
+
+      if (!pickupDate || !pickupTime) {
+        alert('受取日時を選択してください。');
+        return;
+      }
+
+      if (!phoneNumber) {
+        alert('電話番号を入力してください。');
+        return;
+      }
+
+      const orderDetails = Object.entries(state.cart).map(([id, qty]) => {
+        const product = state.products.find(p => p.product_id === id);
+        return {
+          product_id: id,
+          name: product.name,
+          quantity: qty,
+          price: product.price
+        };
+      });
+
+      const payload = {
+        line_user_id: state.lineUserId,
+        customer_name: state.customerName,
+        phone_number: phoneNumber,
+        pickup_date: pickupDate,
+        pickup_time: pickupTime,
+        order_details: orderDetails,
+        total_amount: totalAmount,
+        memo: memo
+      };
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = '送信中...';
+
+      try {
+        const res = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          alert('ご予約が完了しました！LINEメッセージをご確認ください。');
+          liff.closeWindow();
+        } else {
+          throw new Error(result.message);
+        }
+
+      } catch (err) {
+        alert('予約の送信に失敗しました: ' + err.message);
+        btn.disabled = false;
+        btn.innerText = '予約を確定する';
+      }
+    }
+  </script>
+</body>
+</html>
