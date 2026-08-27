@@ -199,9 +199,18 @@
       const container = document.getElementById('productList');
       container.innerHTML = state.products.map(p => {
         const qty = state.cart[p.product_id] || 0;
+        
+        // 【変更点】商品IDから画像パスを自動生成
+        const imageUrl = `images/${p.product_id}.png`;
+    
         return `
           <div class="flex items-center gap-3.5 p-2 border-b border-[#F5F2EC] last:border-0">
-            <img src="${p.image_url || 'https://via.placeholder.com/80'}" alt="${p.name}" class="w-16 h-16 object-cover rounded-xl bg-[#F5F2EC]">
+            <!-- onerrorを追加しておくと、万が一画像ファイルが無い場合でもエラー表示を回避できます -->
+            <img src="${imageUrl}" 
+                 onerror="this.src='https://via.placeholder.com/80?text=No+Image'" 
+                 alt="${p.name}" 
+                 class="w-16 h-16 object-cover rounded-xl bg-[#F5F2EC]">
+            
             <div class="flex-1 min-w-0">
               <h3 class="text-xs font-bold text-[#3B332C] truncate">${p.name}</h3>
               <p class="text-xs text-[#8C6239] font-bold mt-1">¥${p.price.toLocaleString()}</p>
