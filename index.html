@@ -297,11 +297,12 @@
       btn.innerText = '送信中...';
 
       try {
+        // 修正後（Content-Type を text/plain に書き換え）
         const res = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
 
         const result = await res.json();
 
