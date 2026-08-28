@@ -106,11 +106,22 @@
     </div>
   </footer>
 
+  <!-- ========================================== -->
+  <!-- オリジナルメッセージ画面（カスタムアラート） -->
+  <!-- ========================================== -->
+  <div id="customAlert" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#3B332C]/40 backdrop-blur-sm px-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-[#FBF9F5] rounded-2xl p-6 max-w-sm w-full shadow-xl border border-[#EFECE6] text-center transform scale-95 transition-transform duration-300" id="customAlertBox">
+      <div class="text-[#8C6239] text-3xl mb-2">🍞</div>
+      <h3 id="customAlertTitle" class="font-serif-title text-lg font-bold text-[#3B332C] mb-3">お知らせ</h3>
+      <p id="customAlertMessage" class="text-sm text-[#6B5E52] whitespace-pre-wrap mb-6 leading-relaxed text-left">ここにメッセージが入ります。</p>
+      <button id="customAlertBtn" class="bg-[#8C6239] hover:bg-[#734F2D] text-white font-medium py-2.5 px-6 rounded-xl shadow-sm transition duration-200 text-sm tracking-wider w-full">
+        確認しました
+      </button>
+    </div>
+  </div>
   <!-- 処理スクリプト -->
   <script>
-    // ==========================================
-    // 【設定項目】ご自身のURL・IDに書き換えてください
-    // ==========================================
+    
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwiS68dQRh6Km7v3m3k6m0xtByFGUic_FH7EYq2xgjmT8QB22WniYQCwIrfw8Zs6ZeswQ/exec';
     const LIFF_ID = '2011297762-agEK9WiJ';
 
@@ -121,6 +132,37 @@
       lineUserId: '',
       customerName: ''
     };
+    
+    // ==========================================
+    // オリジナルメッセージ画面の制御関数
+    // ==========================================
+    function showAlert(message, title = "わたむぎからのお知らせ", onClose = null) {
+      const alertOverlay = document.getElementById('customAlert');
+      const alertBox = document.getElementById('customAlertBox');
+      const btn = document.getElementById('customAlertBtn');
+
+      document.getElementById('customAlertTitle').innerText = title;
+      // '予約の送信に失敗しました: ' などの不要な文字を消してスッキリ見せる
+      message = message.replace('予約の送信に失敗しました: ', '').replace('Error: ', '');
+      document.getElementById('customAlertMessage').innerText = message;
+      
+      alertOverlay.classList.remove('hidden');
+      // 少し遅れてアニメーション表示
+      setTimeout(() => {
+        alertOverlay.classList.remove('opacity-0');
+        alertBox.classList.remove('scale-95');
+      }, 10);
+
+      // ボタンを押した時の処理
+      btn.onclick = () => {
+        alertOverlay.classList.add('opacity-0');
+        alertBox.classList.add('scale-95');
+        setTimeout(() => {
+          alertOverlay.classList.add('hidden');
+          if (onClose) onClose(); // 閉じた後に実行したい処理があれば実行
+        }, 300);
+      };
+    }
 
     window.addEventListener('DOMContentLoaded', async () => {
       try {
@@ -148,7 +190,7 @@
         document.getElementById('footer').classList.remove('hidden');
 
       } catch (err) {
-        alert('初期化に失敗しました。画面を再読み込みしてください。: ' + err.message);
+        showAlert('初期化に失敗しました。画面を再読み込みしてください。: ' + err.message);
       }
     });
 
@@ -189,7 +231,7 @@
         const dayOfWeek = selectedDate.getDay();
         
         if (closedDays.includes(dayOfWeek)) {
-          alert('選択された日は定休日（水・土・日）です。営業日（月・火・木・金）を選択してください。');
+          showAlert('選択された日は定休日（水・土・日）です。営業日（月・火・木・金）を選択してください。');
           dateInput.value = minDateStr;
         }
       });
@@ -254,7 +296,7 @@
       try {
         const friendship = await liff.getFriendship();
         if (!friendship.friendFlag) {
-          alert('【重要】予約の控えメッセージをお送りするため、公式アカウントの「友だち追加（またはブロック解除）」が必要です。\n\n画面右上の「×」で一度画面を閉じ、トーク画面等から友だち追加を行った後に再度お試しください。');
+          showAlert('【重要】予約の控えメッセージをお送りするため、公式アカウントの「友だち追加（またはブロック解除）」が必要です。\n\n画面右上の「×」で一度画面を閉じ、トーク画面等から友だち追加を行った後に再度お試しください。');
           return; // ここで処理を止め、予約を送信させない
         }
       } catch (err) {
@@ -262,7 +304,7 @@
       }
       const totalAmount = calculateTotal();
       if (totalAmount === 0) {
-        alert('商品を選択してください。');
+        showAlert('商品を選択してください。');
         return;
       }
 
@@ -272,12 +314,12 @@
       const memo = document.getElementById('memo').value.trim();
 
       if (!pickupDate || !pickupTime) {
-        alert('受取日時を選択してください。');
+        showAlert('受取日時を選択してください。');
         return;
       }
 
       if (!phoneNumber) {
-        alert('電話番号を入力してください。');
+        showAlert('電話番号を入力してください。');
         return;
       }
 
@@ -317,14 +359,14 @@
         const result = await res.json();
 
         if (result.status === 'success') {
-          alert('ご予約が完了しました！LINEメッセージをご確認ください。');
+          showAlert('ご予約が完了しました！LINEメッセージをご確認ください。');
           liff.closeWindow();
         } else {
           throw new Error(result.message);
         }
 
       } catch (err) {
-        alert('予約の送信に失敗しました: ' + err.message);
+        showAlert('予約の送信に失敗しました: ' + err.message);
         btn.disabled = false;
         btn.innerText = '予約を確定する';
       }
