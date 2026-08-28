@@ -250,6 +250,16 @@
     }
 
     async function submitOrder() {
+      // === 【追加】友だち登録・ブロックのチェック ===
+      try {
+        const friendship = await liff.getFriendship();
+        if (!friendship.friendFlag) {
+          alert('【重要】予約の控えメッセージをお送りするため、公式アカウントの「友だち追加（またはブロック解除）」が必要です。\n\n画面右上の「×」で一度画面を閉じ、トーク画面等から友だち追加を行った後に再度お試しください。');
+          return; // ここで処理を止め、予約を送信させない
+        }
+      } catch (err) {
+        console.error('友だち状態の取得に失敗:', err);
+      }
       const totalAmount = calculateTotal();
       if (totalAmount === 0) {
         alert('商品を選択してください。');
