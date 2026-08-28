@@ -26,10 +26,10 @@
 <body class="pb-32 min-h-screen">
 
   <!-- ヘッダー -->
-  <header class="bg-white/90 backdrop-blur-md border-b border-[#EFECE6] p-4 text-center sticky top-0 z-10 shadow-sm">
-    <p class="text-[10px] tracking-widest text-[#8C7A6B] font-medium uppercase">Bäckerei</p>
-    <h1 class="font-serif-title text-xl font-bold text-[#3B332C] tracking-wider mt-0.5">渡りに麦</h1>
-    <p class="text-xs text-[#8C7A6B] mt-1">事前お取り置き予約</p>
+  <header class="bg-white/90 backdrop-blur-md border-b border-[#EFECE6] py-2.5 px-4 text-center sticky top-0 z-10 shadow-sm">
+    <p class="text-[9px] tracking-widest text-[#8C7A6B] font-medium uppercase leading-none mb-0.5">Bäckerei</p>
+    <h1 class="font-serif-title text-xl font-bold text-[#3B332C] tracking-wider leading-none">渡りに麦</h1>
+    <p class="text-[11px] text-[#8C7A6B] mt-0.5 leading-none">事前お取り置き予約</p>
   </header>
 
   <!-- ローディング表示 -->
@@ -253,8 +253,8 @@
                  alt="${p.name}" 
                  class="w-16 h-16 object-cover rounded-xl bg-[#F5F2EC]">
             
-            <div class="flex-1 min-w-0">
-              <h3 class="text-xs font-bold text-[#3B332C] truncate">${p.name}</h3>
+            <div class="flex-1 min-w-0 pr-2">
+              <h3 class="text-xs font-bold text-[#3B332C] leading-snug break-words">${p.name}</h3>
               <p class="text-xs text-[#8C6239] font-bold mt-1">¥${p.price.toLocaleString()}</p>
             </div>
             <div class="flex items-center gap-2 bg-[#F5F2EC] rounded-xl p-1">
